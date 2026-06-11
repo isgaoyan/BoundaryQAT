@@ -1,0 +1,31 @@
+# Python
+_pycache_/
+*.py[cod]
+*.egg-info
+dist/
+build/
+venv/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# PyTorch
+*.pth
+*.pt
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+$ Data （大文件用 Git LFS 管理，不直接进仓库）
+data/self_collected/images/
+data/self_collected/eye_crops/
+data/self_collected/masks/
+data/rit_eyes/eye_crops/
+data/rit_eyes/masks/
+results/checkpoints/
