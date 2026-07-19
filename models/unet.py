@@ -22,11 +22,12 @@ class LightUNet(nn.Module):
     参数量: ~454K（INT8 量化后 ~454KB）
     """
 
-    def __init__(self, in_channels: int = 1, out_channels: int = 1):
+    def __init__(self, in_channels: int = 1, out_channels: int = 1, upsample_mode: str = "bilinear"):
         """
         参数：
             in_channels:  输入图像通道数（IR 眼图为 1）
             out_channels: 输出 mask 通道数（二值分割为 1）
+            upsample_mode: 解码器上采样模式；旧检查点默认为 bilinear
         """
         super().__init__()
 
@@ -53,17 +54,17 @@ class LightUNet(nn.Module):
         # ── 解码器（Decoder）────────────────────────────
         # 每层: UpSample 上采样 → 拼接跳跃连接 → ConvBlock 融合
 
-        self.up4 = UpSample(128, 64)                  # [B, 128, 4, 4] → [B, 64, 8, 8]
+        self.up4 = UpSample(128, 64, upsample_mode)   # [B, 128, 4, 4] → [B, 64, 8, 8]
         self.dec4 = ConvBlock(128, 64)                # 拼接后: [B, 128, 8, 8] → [B, 64, 8, 8]
         #   ↑ 输入 128 通道 = 上采样输出 64 + 跳跃连接 enc4 的 64
 
-        self.up3 = UpSample(64, 32)                   # [B, 64, 8, 8] → [B, 32, 16, 16]
+        self.up3 = UpSample(64, 32, upsample_mode)    # [B, 64, 8, 8] → [B, 32, 16, 16]
         self.dec3 = ConvBlock(64, 32)                 # [B, 64, 16, 16] → [B, 32, 16, 16]
 
-        self.up2 = UpSample(32, 16)                   # [B, 32, 16, 16] → [B, 16, 32, 32]
+        self.up2 = UpSample(32, 16, upsample_mode)    # [B, 32, 16, 16] → [B, 16, 32, 32]
         self.dec2 = ConvBlock(32, 16)                 # [B, 32, 32, 32] → [B, 16, 32, 32]
 
-        self.up1 = UpSample(16, 8)                    # [B, 16, 32, 32] → [B, 8, 64, 64]
+        self.up1 = UpSample(16, 8, upsample_mode)     # [B, 16, 32, 32] → [B, 8, 64, 64]
         self.dec1 = ConvBlock(16, 8)                  # [B, 16, 64, 64] → [B, 8, 64, 64]
 
         # ── 输出头（Output Head）────────────────────────
@@ -137,9 +138,9 @@ class LightUNet(nn.Module):
 if __name__ == "__main__":
     model = LightUNet(in_channels=1, out_channels=1)
     param_count = model.count_parameters()
-    print(f"✓ LightUNet 创建成功")
+    print("✓ LightUNet 创建成功")
     print(f"  参数量: {param_count:,}")
-    print(f"  预期:   ~454,000")
+    print("  预期:   ~454,000")
 
     # 模拟单张 IR 眼图输入
     dummy_input = torch.randn(2, 1, 64, 64)

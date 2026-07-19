@@ -1,0 +1,23 @@
+{
+  "name": "stage3_ptq_calibration_search_v1",
+  "base_ptq_config": "configs/stage2_ptq_64.json",
+  "validation_manifest": "data/processed/pupil_segmentation_64/manifests/stage2/validation.csv",
+  "test_manifest": "data/processed/pupil_segmentation_64/manifests/stage2/test.csv",
+  "calibration_manifest_dir": "data/processed/pupil_segmentation_64/manifests/stage2",
+  "reference_validation_metrics": "results/runs/stage2_ptq_64_esp32s3_v2/metrics.json",
+  "reference_test_metrics": "results/runs/stage2_ptq_64_esp32s3_v2_test/metrics.json",
+  "stage2_reference_onnx": "results/runs/stage2_ptq_64_esp32s3_v2/light_unet_64_ptq_esp32s3.onnx",
+  "search_output_dir": "results/runs/stage3_ptq_calibration_search_v1",
+  "test_output_dir": "results/runs/stage3_ptq_calibration_test_v1",
+  "calibration_sample_counts": [64, 128, 256],
+  "activation_algorithms": ["kl", "minmax", "percentile", "mse"],
+  "threshold_search": {
+    "start": 0.3,
+    "stop": 0.7,
+    "step": 0.01
+  },
+  "constraints": {
+    "max_center_mae_increase_pixels": 0.0,
+    "max_empty_prediction_rate_increase": 0.0
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "stage3_lpw_hmeps_64_ptq_esp32s3_v1",
+  "seed": 20260718,
+  "checkpoint": "results/runs/stage3_fp32_64_lpw_hmeps_v1/best_model.pt",
+  "manifest_dir": "data/processed/pupil_segmentation_64/manifests/stage2",
+  "calibration_manifest": "calibration_lpw_128.csv",
+  "evaluation_manifest": "validation.csv",
+  "fp32_metrics": "results/runs/stage3_fp32_64_lpw_hmeps_v1/validation_recheck/metrics.json",
+  "output_dir": "results/runs/stage3_lpw_hmeps_ptq_64_v1",
+  "input_shape": [1, 1, 64, 64],
+  "target": "esp32s3",
+  "num_of_bits": 8,
+  "calibration_steps": 128,
+  "analysis_steps": 8,
+  "device": "cpu",
+  "opset_version": 13
+}

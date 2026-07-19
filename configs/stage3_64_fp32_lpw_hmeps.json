@@ -1,0 +1,28 @@
+{
+  "name": "stage3_lpw_hmeps_64_fp32_v1",
+  "seed": 20260718,
+  "image_size": 64,
+  "lpw_subjects": {
+    "train": ["05", "22", "16", "07", "10", "04", "06", "21", "20", "15", "19", "14", "08", "17", "01", "18"],
+    "validation": ["03", "12", "09"],
+    "test": ["13", "02", "11"]
+  },
+  "hmep_usage": "train_only",
+  "training_manifest": "train.csv",
+  "auxiliary_training_manifest": "train.csv",
+  "empty_mask_policy": "exclude",
+  "image_normalization": "divide_by_255",
+  "loss": "bce_plus_dice",
+  "prediction_threshold": 0.5,
+  "checkpoint_metric": "validation_dice",
+  "boundary_width_pixels": 1,
+  "training": {
+    "epochs": 50,
+    "batch_size": 64,
+    "learning_rate": 0.0003,
+    "weight_decay": 0.0001,
+    "num_workers": 4,
+    "early_stopping_patience": 10,
+    "amp": false
+  }
+}

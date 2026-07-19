@@ -5,6 +5,8 @@
 
 import pytest
 import torch
+import onnx
+import onnxruntime as ort
 from models.common import ConvBlock, DownSample, UpSample
 from models.unet import LightUNet
 
@@ -76,6 +78,32 @@ class TestDownSample:
 class TestUpSample:
     """UpSample 的形状变换测试"""
 
+    def test_uses_espdl_compatible_nearest_mode(self):
+        """验证部署模型固定使用 ESP-DL 支持的最近邻上采样。"""
+        up = UpSample(16, 8, mode="nearest")
+
+        assert up.up.mode == "nearest"
+        assert up.up.align_corners is None
+
+    def test_onnx_resize_has_explicit_roi_and_matches_pytorch(self, tmp_path):
+        """验证 ONNX 最近邻 Resize 没有空 ROI，且输出与 PyTorch 一致。"""
+        up = UpSample(16, 8, mode="nearest").eval()
+        x = torch.randn(1, 16, 8, 8)
+        onnx_path = tmp_path / "nearest_upsample.onnx"
+        torch.onnx.export(up, x, onnx_path, opset_version=13, dynamo=False)
+
+        model = onnx.load(onnx_path)
+        resize_nodes = [node for node in model.graph.node if node.op_type == "Resize"]
+        assert len(resize_nodes) == 1
+        assert len(resize_nodes[0].input) == 3
+        assert all(resize_nodes[0].input)
+
+        session = ort.InferenceSession(str(onnx_path), providers=["CPUExecutionProvider"])
+        onnx_output = session.run(None, {session.get_inputs()[0].name: x.numpy()})[0]
+        with torch.no_grad():
+            torch_output = up(x).numpy()
+        assert torch.allclose(torch.from_numpy(onnx_output), torch.from_numpy(torch_output), atol=1e-6)
+
     @pytest.mark.parametrize("in_ch, out_ch, h, w", [
         (128, 64, 4, 4),     # 典型：瓶颈→解码器第一层
         (64, 32, 8, 8),
@@ -95,6 +123,14 @@ class TestUpSample:
 
 class TestLightUNet:
     """LightUNet 端到端测试"""
+
+    def test_upsample_mode_is_explicit(self):
+        """验证旧模型默认双线性，新部署模型可显式选择最近邻。"""
+        legacy_model = LightUNet()
+        deployment_model = LightUNet(upsample_mode="nearest")
+
+        assert legacy_model.up1.mode == "bilinear"
+        assert deployment_model.up1.mode == "nearest"
 
     def test_default_input_output_shape(self):
         """验证默认输入 (1×64×64) 的输出形状"""
@@ -164,3 +200,16 @@ class TestLightUNet:
             expected_size = size
             assert y.shape == (2, 1, expected_size, expected_size), \
                 f"输入 {size}×{size} 失败: 输出 {y.shape}"
+
+    def test_stage1_128_input_forward_and_backward(self):
+        """验证阶段一 128×128 输入能够完成前向传播与梯度反传。"""
+        model = LightUNet()
+        model.train()
+        x = torch.randn(2, 1, 128, 128)
+
+        y = model(x)
+        y.mean().backward()
+
+        assert y.shape == (2, 1, 128, 128)
+        assert model.enc1.conv1.weight.grad is not None
+        assert model.output_conv.weight.grad is not None

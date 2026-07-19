@@ -1,10 +1,12 @@
 # Python
-_pycache_/
+__pycache__/
 *.py[cod]
 *.egg-info
 dist/
 build/
 venv/
+.pytest_cache/
+.ruff_cache/
 
 # Jupyter
 .ipynb_checkpoints/
@@ -14,18 +16,32 @@ venv/
 *.pth
 *.pt
 
-# IDE
+# IDE / OS
 .vscode/
 .idea/
-
-# OS
 .DS_Store
 Thumbs.db
 
-$ Data （大文件用 Git LFS 管理，不直接进仓库）
-data/self_collected/images/
-data/self_collected/eye_crops/
-data/self_collected/masks/
-data/rit_eyes/eye_crops/
-data/rit_eyes/masks/
-results/checkpoints/
+# 数据、训练产物与本地导出物
+data/
+results/
+artifacts/
+
+# 本地协作配置与个人学习资料
+.agents/
+.codex/
+docs/求职课程/
+docs/嵌入式AI求职学习路线.md
+docs/ESP32-S3硬件开发环境入门.md
+docs/实施记录/
+docs/决策记录/2026-07-20_最近邻Resize采用ONNX_opset10.md
+
+# ESP-IDF 自动生成/下载内容与暂未公开的验证输入、候选模型
+deployment/esp32s3/managed_components/
+deployment/esp32s3/sdkconfig
+deployment/esp32s3/main/testdata/
+deployment/esp32s3/main/models/
+
+# 已被当前正式链路替代的早期探针脚本
+scripts/stage0_export_probe.py
+scripts/stage0_quantize_probe.py
