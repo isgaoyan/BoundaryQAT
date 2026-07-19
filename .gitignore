@@ -27,14 +27,15 @@ data/
 results/
 artifacts/
 
-# 本地协作配置与个人学习资料
+# 本地协作配置与内部资料
 .agents/
 .codex/
-docs/求职课程/
-docs/嵌入式AI求职学习路线.md
-docs/ESP32-S3硬件开发环境入门.md
-docs/实施记录/
-docs/决策记录/2026-07-20_最近邻Resize采用ONNX_opset10.md
+
+# docs 仅公开精简后的进度、实验结果和数据许可
+docs/*
+!docs/当前进度.md
+!docs/实验结果汇总.md
+!docs/数据来源与许可.md
 
 # ESP-IDF 自动生成/下载内容与暂未公开的验证输入、候选模型
 deployment/esp32s3/managed_components/

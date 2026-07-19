@@ -2,7 +2,7 @@
 
 > **Status:** fixed-image inference has been validated on an ESP32-S3; camera integration and the implementation demo shoot are still pending. The deployed nearest-neighbor INT8 candidate remains an engineering candidate because its test empty-prediction rate is `0.6993%`.
 
-[中文说明](README.md) · [Current progress (Chinese)](docs/当前进度.md) · [Data and licensing](docs/数据来源与许可.md)
+[中文说明](README.md) · [Current progress](docs/当前进度.md) · [Experiment results](docs/实验结果汇总.md) · [Data and licensing](docs/数据来源与许可.md)
 
 ## Goal
 
