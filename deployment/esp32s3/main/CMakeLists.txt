@@ -1,5 +1,5 @@
 idf_component_register(
-    SRCS "main.cpp"
+    SRCS "main.cpp" "camera_preview.cpp"
     INCLUDE_DIRS "."
     EMBED_FILES "testdata/lpw__02_04_0001_gray64.bin"
 )

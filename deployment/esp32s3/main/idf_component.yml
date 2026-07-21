@@ -15,3 +15,4 @@ dependencies:
   #   # All dependencies of `main` are public by default.
   #   public: true
   espressif/esp-dl: ==3.3.1
+  espressif/esp32-camera: ==2.1.7

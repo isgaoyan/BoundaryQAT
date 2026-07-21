@@ -13,6 +13,7 @@
 #include "esp_log.h"
 #include "esp_psram.h"
 #include "esp_timer.h"
+#include "camera_preview.hpp"
 
 static const char *TAG = "固定模型验收";
 static constexpr size_t BOUNDARYQAT_MODEL_SIZE = 497376;
@@ -196,12 +197,12 @@ extern "C" void app_main()
         return;
     }
 
-    dl::Model model("model",
-                    fbs::MODEL_LOCATION_IN_FLASH_PARTITION,
-                    0,
-                    dl::MEMORY_MANAGER_GREEDY,
-                    nullptr,
-                    true);
+    static dl::Model model("model",
+                           fbs::MODEL_LOCATION_IN_FLASH_PARTITION,
+                           0,
+                           dl::MEMORY_MANAGER_GREEDY,
+                           nullptr,
+                           true);
     if (!print_model_io_info(model)) {
         return;
     }
@@ -215,4 +216,11 @@ extern "C" void app_main()
 
     print_memory_info();
     ESP_LOGI(TAG, "固定输入推理验收通过");
+
+    const esp_err_t preview_result = start_camera_preview(&model);
+    if (preview_result != ESP_OK) {
+        ESP_LOGE(TAG, "相机网页预览启动失败：%s", esp_err_to_name(preview_result));
+        return;
+    }
+    ESP_LOGI(TAG, "相机网页预览启动成功，请连接 BoundaryQAT-CAM 后打开 http://192.168.4.1");
 }
